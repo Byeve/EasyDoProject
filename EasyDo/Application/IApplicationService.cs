@@ -8,9 +8,7 @@ namespace EasyDo.Application
     public interface IApplicationService<TEntity> : ITransientDependency
     {
         bool Delete(TEntity entity);
-        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter);
-        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size);
-        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending);
+        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending =true);
         bool Any(Expression<Func<TEntity, bool>> filter);
         long Count(Expression<Func<TEntity, bool>> filter);
         TEntity GetById(string Id);

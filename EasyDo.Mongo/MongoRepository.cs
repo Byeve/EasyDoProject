@@ -10,10 +10,10 @@ namespace EasyDo.Mongo
 {
     public  class MongoRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
-        private readonly MongoDbContext dbContext;
+        private readonly IMongoDbContext dbContext;
 
         //初始化
-        public MongoRepository(MongoDbContext dbContext)
+        public MongoRepository(IMongoDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
@@ -120,20 +120,6 @@ namespace EasyDo.Mongo
                 return secondaryMongoCollection.AsQueryable();
             }
         }
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter)
-        {
-            return Table.Where(filter).ToList();
-        }
-
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, int pageIndex, int size)
-        {
-            return Find(filter, i => i.Id, pageIndex, size);
-        }
-
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size)
-        {
-            return Find(filter, order, pageIndex, size, true);
-        }
 
         public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
         {
@@ -146,59 +132,15 @@ namespace EasyDo.Mongo
             return Table.ToList();
 
         }
-        public virtual IEnumerable<TEntity> FindAll(int pageIndex, int size)
-        {
-            return FindAll(i => i.Id, pageIndex, size);
-        }
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, object>> order, int pageIndex, int size)
-        {
-            return FindAll(order, pageIndex, size, true);
-        }
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
-        {
-            var query = isDescending ? Table.OrderByDescending(order) : Table.OrderBy(order);
-            return query.Skip(pageIndex * size).Take(size).ToList();
-        }
 
         public virtual TEntity First()
         {
-            return FindAll(i => i.Id, 0, 1, false).FirstOrDefault();
+            return Table.FirstOrDefault();
         }
 
-        public virtual TEntity First(Expression<Func<TEntity, bool>> filter)
-        {
-            return First(filter, i => i.Id);
-        }
-        public virtual TEntity First(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order)
-        {
-            return First(filter, order, false);
-        }
-
-        public virtual TEntity First(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, bool isDescending)
-        {
-            return Find(filter, order, 0, 1, isDescending).FirstOrDefault();
-        }
         public virtual TEntity Get(TPrimaryKey id)
         {
-            return Find(i => i.Id.Equals(id)).FirstOrDefault();
-        }
-        public virtual TEntity Last()
-        {
-            return FindAll(i => i.Id, 0, 1, true).FirstOrDefault();
-        }
-
-        public virtual TEntity Last(Expression<Func<TEntity, bool>> filter)
-        {
-            return Last(filter, i => i.Id);
-        }
-        public virtual TEntity Last(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order)
-        {
-            return Last(filter, order, false);
-        }
-
-        public virtual TEntity Last(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, bool isDescending)
-        {
-            return First(filter, order, !isDescending);
+            return Table.First(m => m.Id.Equals(id));
         }
         #endregion
 

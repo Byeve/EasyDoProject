@@ -1,13 +1,12 @@
-﻿using MongoDB.Driver;
-using EasyDo.Configuration;
-using EasyDo.Dependency;
+﻿using EasyDo.Configuration;
 using EasyDo.Domain;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 
 namespace EasyDo.Mongo
 {
-    public class MongoDbContext: ISingletonDependency
+    public class MongoDbContext : IMongoDbContext
     {
         private static Dictionary<string, MongoClient> MongoClients = new Dictionary<string, MongoClient>();
 

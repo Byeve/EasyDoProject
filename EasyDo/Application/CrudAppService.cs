@@ -21,28 +21,6 @@ namespace EasyDo.Application
         {
             return repository.Get(Id);
         }
-        /// <summary>
-        /// 条件查询所有
-        /// </summary>
-        /// <param name="filter">过滤条件</param>
-        /// <returns>对象集合</returns>
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter)
-        {
-            return repository.Find(filter);
-        }
-
-        /// <summary>
-        /// 条件分页
-        /// </summary>
-        /// <param name="filter">过滤条件</param>
-        /// <param name="order">排序</param>
-        /// <param name="pageIndex">页码</param>
-        /// <param name="size">页码大小</param>
-        /// <returns>对象集合</returns>
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size)
-        {
-            return repository.Find(filter, order, pageIndex, size);
-        }
 
         /// <summary>
         /// 条件分页
@@ -53,7 +31,7 @@ namespace EasyDo.Application
         /// <param name="size">页码大小</param>
         /// <param name="isDescending">升序/降序</param>
         /// <returns>对象集合</returns>
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
+        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending =true)
         {
             return repository.Find(filter, order, pageIndex, size, isDescending);
         }
