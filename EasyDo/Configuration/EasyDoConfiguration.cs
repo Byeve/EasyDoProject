@@ -55,7 +55,7 @@ namespace EasyDo.Configuration
             }
 
             //随机一个从库连接
-            var index = rd.Next(0, dataBaseConfiguration.SlaveDataBaseConnectionStrings.Count);
+            var index = rd.Next(0, dataBaseConfiguration.SlaveDataBaseConnectionStrings.Count-1);
             return dataBaseConfiguration.SlaveDataBaseConnectionStrings[index] ;
         }
 
