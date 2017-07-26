@@ -12,7 +12,7 @@ namespace EasyDo.Mongo
         {
             iocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
             iocManager.ContainerBuilder.RegisterGeneric(typeof(MongoRepository<,>)).As(typeof(IRepository<,>)).InstancePerDependency();
-            iocManager.ContainerBuilder.RegisterGeneric(typeof(MongoRepositoryOfStringPrimaryKey<>)).As(typeof(IRepository<>)).InstancePerDependency();
+            //iocManager.ContainerBuilder.RegisterGeneric(typeof(MongoRepositoryOfStringPrimaryKey<>)).As(typeof(IRepository<>)).InstancePerDependency();
         }
     }
 }

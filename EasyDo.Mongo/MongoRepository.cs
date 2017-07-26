@@ -21,25 +21,25 @@ namespace EasyDo.Mongo
             //从库
             secondaryMongoCollection = dbContext.SecondaryMongoCollection<TEntity>();
         }
-        private bool IsSoftEntity()
+        private  bool IsSoftEntity()
         {
             return typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity));
         }
         #region Delete
 
-        public  bool Delete(TEntity entity)
+        public virtual  bool Delete(TEntity entity)
         {
             return Delete(entity.Id);
         }
 
-        public  Task<bool> DeleteAsync(TEntity entity)
+        public virtual Task<bool> DeleteAsync(TEntity entity)
         {
             return Task.Run(() =>
             {
                 return Delete(entity);
             });
         }
-        public  bool Delete(TPrimaryKey id)
+        public virtual bool Delete(TPrimaryKey id)
         {
             if (IsSoftEntity())
             {
@@ -48,7 +48,7 @@ namespace EasyDo.Mongo
             return primaryMongoCollection.DeleteOne(i => i.Id.Equals(id)).IsAcknowledged;
         }
 
-        public  Task<bool> DeleteAsync(TPrimaryKey id)
+        public virtual Task<bool> DeleteAsync(TPrimaryKey id)
         {
             return Task.Run(() =>
             {
@@ -56,7 +56,7 @@ namespace EasyDo.Mongo
             });
         }
 
-        public  bool Delete(Expression<Func<TEntity, bool>> filter)
+        public virtual bool Delete(Expression<Func<TEntity, bool>> filter)
         {
             if (IsSoftEntity())
             {
@@ -65,7 +65,7 @@ namespace EasyDo.Mongo
             return primaryMongoCollection.DeleteMany(filter).IsAcknowledged;
         }
 
-        public  Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter)
+        public virtual Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter)
         {
             return Task.Run(() =>
             {
@@ -73,7 +73,7 @@ namespace EasyDo.Mongo
             });
         }
 
-        public  bool DeleteAll()
+        public virtual bool DeleteAll()
         {
             if (IsSoftEntity())
             {
@@ -82,7 +82,7 @@ namespace EasyDo.Mongo
             return primaryMongoCollection.DeleteMany(Builders<TEntity>.Filter.Empty).IsAcknowledged;
         }
 
-        public  Task<bool> DeleteAllAsync()
+        public virtual Task<bool> DeleteAllAsync()
         {
             return Task.Run(() =>
             {
@@ -93,7 +93,7 @@ namespace EasyDo.Mongo
 
         #region Select
 
-        public  IQueryable<TEntity> Table
+        public virtual IQueryable<TEntity> Table
         {
             get
             {
@@ -104,105 +104,105 @@ namespace EasyDo.Mongo
                 return secondaryMongoCollection.AsQueryable();
             }
         }
-        public  IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter)
+        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter)
         {
             return Table.Where(filter).ToList();
         }
 
-        public  IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, int pageIndex, int size)
+        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, int pageIndex, int size)
         {
             return Find(filter, i => i.Id, pageIndex, size);
         }
 
-        public  IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size)
+        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size)
         {
             return Find(filter, order, pageIndex, size, true);
         }
 
-        public  IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
+        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
         {
             var query = isDescending ? Table.Where(filter).OrderByDescending(order) : Table.Where(filter).OrderBy(order);
 
             return query.Skip(pageIndex * size).Take(size).ToList();
         }
-        public  IEnumerable<TEntity> FindAll()
+        public virtual IEnumerable<TEntity> FindAll()
         {
             return Table.ToList();
 
         }
-        public  IEnumerable<TEntity> FindAll(int pageIndex, int size)
+        public virtual IEnumerable<TEntity> FindAll(int pageIndex, int size)
         {
             return FindAll(i => i.Id, pageIndex, size);
         }
-        public  IEnumerable<TEntity> FindAll(Expression<Func<TEntity, object>> order, int pageIndex, int size)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, object>> order, int pageIndex, int size)
         {
             return FindAll(order, pageIndex, size, true);
         }
-        public  IEnumerable<TEntity> FindAll(Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending)
         {
             var query = isDescending ? Table.OrderByDescending(order) : Table.OrderBy(order);
             return query.Skip(pageIndex * size).Take(size).ToList();
         }
 
-        public  TEntity First()
+        public virtual TEntity First()
         {
             return FindAll(i => i.Id, 0, 1, false).FirstOrDefault();
         }
 
-        public  TEntity First(Expression<Func<TEntity, bool>> filter)
+        public virtual TEntity First(Expression<Func<TEntity, bool>> filter)
         {
             return First(filter, i => i.Id);
         }
-        public  TEntity First(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order)
+        public virtual TEntity First(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order)
         {
             return First(filter, order, false);
         }
 
-        public  TEntity First(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, bool isDescending)
+        public virtual TEntity First(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, bool isDescending)
         {
             return Find(filter, order, 0, 1, isDescending).FirstOrDefault();
         }
-        public  TEntity Get(TPrimaryKey id)
+        public virtual TEntity Get(TPrimaryKey id)
         {
             return Find(i => i.Id.Equals(id)).FirstOrDefault();
         }
-        public  TEntity Last()
+        public virtual TEntity Last()
         {
             return FindAll(i => i.Id, 0, 1, true).FirstOrDefault();
         }
 
-        public  TEntity Last(Expression<Func<TEntity, bool>> filter)
+        public virtual TEntity Last(Expression<Func<TEntity, bool>> filter)
         {
             return Last(filter, i => i.Id);
         }
-        public  TEntity Last(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order)
+        public virtual TEntity Last(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order)
         {
             return Last(filter, order, false);
         }
 
-        public  TEntity Last(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, bool isDescending)
+        public virtual TEntity Last(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, bool isDescending)
         {
             return First(filter, order, !isDescending);
         }
         #endregion
 
         #region Insert
-        public  void Insert(TEntity entity)
+        public virtual void Insert(TEntity entity)
         {
             primaryMongoCollection.InsertOne(entity);
         }
 
-        public  Task InsertAsync(TEntity entity)
+        public virtual Task InsertAsync(TEntity entity)
         {
             return primaryMongoCollection.InsertOneAsync(entity);
         }
 
-        public  void Insert(IEnumerable<TEntity> entities)
+        public virtual void Insert(IEnumerable<TEntity> entities)
         {
             primaryMongoCollection.InsertMany(entities);
         }
 
-        public  Task InsertAsync(IEnumerable<TEntity> entities)
+        public virtual Task InsertAsync(IEnumerable<TEntity> entities)
         {
             return primaryMongoCollection.InsertManyAsync(entities);
         }
@@ -210,12 +210,12 @@ namespace EasyDo.Mongo
 
         #region Update
 
-        public  bool Update(TEntity entity)
+        public virtual bool Update(TEntity entity)
         {
             return primaryMongoCollection.ReplaceOne(i => i.Id.Equals(entity.Id), entity).IsAcknowledged;
         }
 
-        public  Task<bool> UpdateAsync(TEntity entity)
+        public virtual Task<bool> UpdateAsync(TEntity entity)
         {
             return Task.Run(() =>
             {
@@ -223,7 +223,7 @@ namespace EasyDo.Mongo
             });
         }
 
-        public  void Update(IEnumerable<TEntity> entities)
+        public virtual void Update(IEnumerable<TEntity> entities)
         {
             foreach (TEntity entity in entities)
             {
@@ -234,29 +234,29 @@ namespace EasyDo.Mongo
 
         #region Aggregates
 
-        public  bool Any(Expression<Func<TEntity, bool>> filter)
+        public virtual bool Any(Expression<Func<TEntity, bool>> filter)
         {
             return Table.Where(filter).Any();
         }
 
-        public  long Count(Expression<Func<TEntity, bool>> filter)
+        public virtual long Count(Expression<Func<TEntity, bool>> filter)
         {
             return Table.Where(filter).LongCount();
         }
 
-        public  Task<long> CountAsync(Expression<Func<TEntity, bool>> filter)
+        public virtual Task<long> CountAsync(Expression<Func<TEntity, bool>> filter)
         {
             return Task.Run(() => {
                 return Count(filter);
             });
         }
 
-        public  long Count()
+        public virtual long Count()
         {
             return Table.LongCount();
         }
 
-        public  Task<long> CountAsync()
+        public virtual Task<long> CountAsync()
         {
             return Task.Run(() => {
                 return Count();
@@ -265,10 +265,10 @@ namespace EasyDo.Mongo
 
         #endregion Utils
     }
-    public class MongoRepositoryOfStringPrimaryKey<TEntity> : MongoRepository<TEntity, string>, IRepository<TEntity> where TEntity : class, IEntity<string>
-    {
-        public MongoRepositoryOfStringPrimaryKey(MongoDbContext dbContext) : base(dbContext)
-        {
-        }
-    }
+    //public class MongoRepositoryOfStringPrimaryKey<TEntity> : MongoRepository<TEntity, string>, IRepository<TEntity> where TEntity : class, IEntity<string>
+    //{
+    //    public MongoRepositoryOfStringPrimaryKey(MongoDbContext dbContext) : base(dbContext)
+    //    {
+    //    }
+    //}
 }
