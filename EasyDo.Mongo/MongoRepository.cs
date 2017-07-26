@@ -23,7 +23,7 @@ namespace EasyDo.Mongo
         {
             get
             {
-                return dbContext.PrimaryMongoCollection<TEntity>();
+                return dbContext.MasterMongoCollection<TEntity>();
             }
         }
 
@@ -32,7 +32,7 @@ namespace EasyDo.Mongo
         {
             get
             {
-                return dbContext.SecondaryMongoCollection<TEntity>();
+                return dbContext.SlaveMongoCollection<TEntity>();
             }
         }
 

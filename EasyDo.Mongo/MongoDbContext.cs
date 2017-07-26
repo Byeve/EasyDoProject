@@ -28,7 +28,7 @@ namespace EasyDo.Mongo
         /// </summary>
         /// <param name="DbName"></param>
         /// <returns></returns>
-        private IMongoDatabase PrimaryDatabase(string DbName)
+        private IMongoDatabase MasterDatabase(string DbName)
         {
             var dbKey = DbName + PrimaryDB;
             if (MongoClients.ContainsKey(dbKey))
@@ -50,7 +50,7 @@ namespace EasyDo.Mongo
         /// </summary>
         /// <param name="DbName"></param>
         /// <returns></returns>
-        private IMongoDatabase SecondaryDatabase(string DbName)
+        private IMongoDatabase SlaveDatabase(string DbName)
         {
             var dbKey = DbName + SecondaryDB;
             if (MongoClients.ContainsKey(dbKey))
@@ -72,11 +72,11 @@ namespace EasyDo.Mongo
         /// </summary>
         /// <typeparam name="TEntity">实体类型</typeparam>
         /// <returns>IMongoCollection</returns>
-        public IMongoCollection<TEntity> PrimaryMongoCollection<TEntity>() where TEntity : class
+        public IMongoCollection<TEntity> MasterMongoCollection<TEntity>() where TEntity : class
         {
             var entityDescribe = GetEntityDescribe<TEntity>();
 
-            return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
+            return MasterDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
             
         }
 
@@ -85,17 +85,17 @@ namespace EasyDo.Mongo
         /// </summary>
         /// <typeparam name="TEntity">实体类型</typeparam>
         /// <returns>IMongoCollection</returns>
-        public IMongoCollection<TEntity> SecondaryMongoCollection<TEntity>() where TEntity : class
+        public IMongoCollection<TEntity> SlaveMongoCollection<TEntity>() where TEntity : class
         {
             //获取实体对象信息
             var entityDescribe = GetEntityDescribe<TEntity>();
 
             if (entityDescribe.ReadSecondary && EasyDoConfiguration.EnableSecondaryDB(entityDescribe.DbName))
             {
-                return SecondaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
+                return SlaveDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
             }
 
-            return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
+            return MasterDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
         }
 
         /// <summary>

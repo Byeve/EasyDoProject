@@ -14,7 +14,7 @@ namespace EasyDo.Mongo
         public static IMongoCollection<TEntity> MongoCollection<TEntity, TPrimaryKey>(this IRepository<TEntity, TPrimaryKey> repository) where TEntity : class, IEntity<TPrimaryKey>
         {
             var dbContext = IocManager.Instance.Resolve<MongoDbContext>();
-            return dbContext.PrimaryMongoCollection<TEntity>();
+            return dbContext.MasterMongoCollection<TEntity>();
         }
 
         /// <summary>
