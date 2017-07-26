@@ -2,8 +2,8 @@
 
 namespace EasyDo.Dependency
 {
-    [ AttributeUsage(AttributeTargets.Class,AllowMultiple =true)]
-    public  class AspectAttribute: Attribute
+    [AttributeUsage(AttributeTargets.Method,AllowMultiple =true)]
+    public  abstract class AspectAttribute: Attribute
     {
         public  Type InterceptorType { get; set; }
 

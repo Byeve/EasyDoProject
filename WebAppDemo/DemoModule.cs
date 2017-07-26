@@ -17,7 +17,8 @@ namespace WebAppDemo
             var RedisCacheHost = ConfigurationManager.AppSettings["RedisCacheHost"] ?? "";
             EasyDoConfigurationBulider.Bulid(settings =>
             {
-                settings.DataBaseConfigurations("HC", dbcon,"")
+                settings
+                .DataBaseConfigurations("HC", dbcon)
                 .RedisConfigurations(RedisCacheHost, 6379);
             });
         }

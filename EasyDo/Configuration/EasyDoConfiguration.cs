@@ -23,35 +23,6 @@ namespace EasyDo.Configuration
         public bool EnableRedis { get; internal set; }
 
         /// <summary>
-        ///  是否启用从库（读从库）
-        /// </summary>
-        /// <param name="databaseName">数据库名称</param>
-        /// <returns></returns>
-        public bool EnableSecondaryDB(string databaseName)
-        {
-            var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
-            if (dataBaseConfiguration == null)
-            {
-                throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", databaseName));
-            }
-            return dataBaseConfiguration.EnableSecondaryDB;
-        }
-        /// <summary>
-        /// 设置是否启用主从
-        /// </summary>
-        /// <param name="databaseName">数据库名称</param>
-        /// <param name="enableSecondary"></param>
-        internal void SetEnableSecondaryDB(string databaseName ,bool enableSecondary=false)
-        {
-            var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
-            if (dataBaseConfiguration == null)
-            {
-                throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", databaseName));
-            }
-            dataBaseConfiguration.EnableSecondaryDB = enableSecondary;
-        }
-
-        /// <summary>
         /// 根据数据库名称 获取数据库连接
         /// </summary>
         /// <param name="databaseName">数据库名称</param>
@@ -80,6 +51,37 @@ namespace EasyDo.Configuration
             }
             return dataBaseConfiguration.SecondaryDataBaseConnection ;
         }
+
+        /// <summary>
+        ///  是否启用从库（读从库）
+        /// </summary>
+        /// <param name="databaseName">数据库名称</param>
+        /// <returns></returns>
+        public bool EnableSecondaryDB(string databaseName)
+        {
+            var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
+            if (dataBaseConfiguration == null)
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", databaseName));
+            }
+            return dataBaseConfiguration.EnableSecondaryDB;
+        }
+        /// <summary>
+        /// 是否启用删除
+        /// </summary>
+        /// <param name="databaseName"></param>
+        /// <returns></returns>
+        public bool EnableSoftDelete(string databaseName)
+        {
+            var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
+            if (dataBaseConfiguration == null)
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", databaseName));
+            }
+            return !dataBaseConfiguration.DisableSoftDelete;
+        }
+
+
         /// <summary>
         /// redis 配置信息
         /// </summary>
@@ -101,6 +103,9 @@ namespace EasyDo.Configuration
         public string SecondaryDataBaseConnection {get;set;}
 
         public bool EnableSecondaryDB { get; set; }
+
+        public bool DisableSoftDelete { get; set; }
+
     }
     /// <summary>
     /// redis配置信息

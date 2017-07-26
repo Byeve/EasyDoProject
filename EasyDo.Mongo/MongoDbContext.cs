@@ -78,10 +78,14 @@ namespace EasyDo.Mongo
             return mongoClient.GetDatabase(DbName);
         }
 
-
+        /// <summary>
+        /// 获取主库 MongoCollection
+        /// </summary>
+        /// <typeparam name="TEntity">实体类型</typeparam>
+        /// <returns>IMongoCollection</returns>
         public IMongoCollection<TEntity> PrimaryMongoCollection<TEntity>() where TEntity : class
         {
-            var entityDescribe = entityManager.GetEntityDescribe(typeof(TEntity));
+            var entityDescribe = GetEntityDescribe<TEntity>();
 
             return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
             
@@ -91,11 +95,11 @@ namespace EasyDo.Mongo
         /// 获取从库MongoCollection
         /// </summary>
         /// <typeparam name="TEntity">实体类型</typeparam>
-        /// <returns></returns>
+        /// <returns>IMongoCollection</returns>
         public IMongoCollection<TEntity> SecondaryMongoCollection<TEntity>() where TEntity : class
         {
             //获取实体对象信息
-            var entityDescribe = entityManager.GetEntityDescribe(typeof(TEntity));
+            var entityDescribe = GetEntityDescribe<TEntity>();
 
             if (entityDescribe.ReadSecondary && EasyDoConfiguration.EnableSecondaryDB(entityDescribe.DbName))
             {
@@ -103,6 +107,23 @@ namespace EasyDo.Mongo
             }
 
             return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
+        }
+
+        /// <summary>
+        /// 是否可以软删除
+        /// </summary>
+        /// <returns></returns>
+        public bool EnableSoftDelete<TEntity>()
+        {
+            var entityDescribe = GetEntityDescribe<TEntity>();
+
+            return EasyDoConfiguration.EnableSoftDelete(entityDescribe.DbName);
+        }
+
+        private EntityDescribe GetEntityDescribe<TEntity>()
+        {
+            //获取实体对象信息
+            return entityManager.GetEntityDescribe(typeof(TEntity));
         }
     }
 }

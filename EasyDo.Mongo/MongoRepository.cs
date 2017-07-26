@@ -10,20 +10,36 @@ namespace EasyDo.Mongo
 {
     public  class MongoRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
-        private IMongoCollection<TEntity> primaryMongoCollection;
+        private readonly MongoDbContext dbContext;
 
-        private IMongoCollection<TEntity> secondaryMongoCollection;
+        //初始化
         public MongoRepository(MongoDbContext dbContext)
         {
-            //主库
-            primaryMongoCollection = dbContext.PrimaryMongoCollection<TEntity>();
-
-            //从库
-            secondaryMongoCollection = dbContext.SecondaryMongoCollection<TEntity>();
+            this.dbContext = dbContext;
         }
+
+        //主库
+        private IMongoCollection<TEntity> primaryMongoCollection
+        {
+            get
+            {
+                return dbContext.PrimaryMongoCollection<TEntity>();
+            }
+        }
+
+        //从库
+        private IMongoCollection<TEntity> secondaryMongoCollection
+        {
+            get
+            {
+                return dbContext.SecondaryMongoCollection<TEntity>();
+            }
+        }
+
+        //是否软删除
         private  bool IsSoftEntity()
         {
-            return typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity));
+            return dbContext.EnableSoftDelete<TEntity>() && typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity));
         }
         #region Delete
 

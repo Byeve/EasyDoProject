@@ -64,6 +64,8 @@
     <Compile Include="Cache\MemoryCache.cs" />
     <Compile Include="Configuration\EasyDoConfigurationPart.cs" />
     <Compile Include="Dependency\AspectAttribute.cs" />
+    <Compile Include="Cache\CacheAttribute.cs" />
+    <Compile Include="Cache\CacheInterceptor.cs" />
     <Compile Include="Dependency\DependencyLifeStyle.cs" />
     <Compile Include="Dependency\IocManager.cs" />
     <Compile Include="Dependency\ISingletonDependency.cs" />

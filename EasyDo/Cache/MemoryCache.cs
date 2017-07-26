@@ -3,7 +3,7 @@ using System;
 using System.Runtime.Caching;
 namespace EasyDo.Cache
 {
-    public class EasyDoMemoryCache : ICache
+    public class EasyDoMemoryCache : ICache,ITransientDependency
     {
         private readonly static MemoryCache Cache  = MemoryCache.Default;
         public long Decrement(string key, uint value)

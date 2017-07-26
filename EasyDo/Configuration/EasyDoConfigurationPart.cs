@@ -45,7 +45,29 @@ namespace EasyDo.Configuration
         /// <returns></returns>
         public EasyDoConfigurationPart UseSecondaryDB(string dataBaseName)
         {
-            Configuration.SetEnableSecondaryDB(dataBaseName, true);
+
+            var dataBaseConfiguration = Configuration.DataBaseConfigurations.Find(m => m.DataBaseName == dataBaseName);
+            if (dataBaseConfiguration == null)
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", dataBaseName));
+            }
+            dataBaseConfiguration.EnableSecondaryDB = true;
+            return this;
+        }
+
+        /// <summary>
+        /// 禁止软删除
+        /// </summary>
+        /// <param name="dataBaseName">数据库名称</param>
+        /// <returns></returns>
+        public EasyDoConfigurationPart DisableSoftDelete(string dataBaseName)
+        {
+            var dataBaseConfiguration = Configuration.DataBaseConfigurations.Find(m => m.DataBaseName == dataBaseName);
+            if (dataBaseConfiguration == null)
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", dataBaseName));
+            }
+            dataBaseConfiguration.DisableSoftDelete = true;
             return this;
         }
 
