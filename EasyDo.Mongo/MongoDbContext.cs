@@ -14,14 +14,16 @@ namespace EasyDo.Mongo
         private readonly EasyDoConfiguration EasyDoConfiguration;
         private readonly EntityManager entityManager;
 
-        private readonly string PrimaryDB = "PrimaryDB";
-        private readonly string SecondaryDB = "SecondaryDB";
+        private const string PrimaryDB = "PrimaryDB";
+        private const string SecondaryDB = "SecondaryDB";
 
         public MongoDbContext(EasyDoConfiguration EasyDoConfiguration, EntityManager entityManager)
         {
             this.EasyDoConfiguration = EasyDoConfiguration;
             this.entityManager = entityManager;
         }
+
+
         /// <summary>
         /// 获取主库
         /// </summary>
@@ -75,6 +77,7 @@ namespace EasyDo.Mongo
             }
             return mongoClient.GetDatabase(DbName);
         }
+
 
         public IMongoCollection<TEntity> PrimaryMongoCollection<TEntity>() where TEntity : class
         {
