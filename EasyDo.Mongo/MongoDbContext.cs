@@ -48,6 +48,7 @@ namespace EasyDo.Mongo
             }
             return mongoClient.GetDatabase(DbName);
         }
+
         /// <summary>
         /// 获取从库
         /// </summary>
@@ -82,6 +83,7 @@ namespace EasyDo.Mongo
             return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
             
         }
+
         /// <summary>
         /// 获取从库MongoCollection
         /// </summary>
