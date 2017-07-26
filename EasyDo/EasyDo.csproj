@@ -66,7 +66,9 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Cache\ICache.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
+    <Compile Include="Configuration\DataBaseConfiguration.cs" />
     <Compile Include="Configuration\EasyDoConfigurationPart.cs" />
+    <Compile Include="Configuration\RedisConfiguration.cs" />
     <Compile Include="Dependency\AspectAttribute.cs" />
     <Compile Include="Cache\CacheAttribute.cs" />
     <Compile Include="Cache\CacheInterceptor.cs" />

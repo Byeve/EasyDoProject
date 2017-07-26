@@ -27,7 +27,7 @@ namespace EasyDo.Cache
 
 			var value = cache.Get<string>(cacheKey, () => 
             {
-				invocation.Proceed();
+			    invocation.Proceed();
 				return SerializeWithType(invocation.ReturnValue, invocation.Method.ReturnType);
 			}
 			,cacheAttribute.CacheTime);

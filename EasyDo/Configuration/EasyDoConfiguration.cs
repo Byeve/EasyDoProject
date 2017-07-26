@@ -11,6 +11,10 @@ namespace EasyDo.Configuration
         /// redids 配置信息
         /// </summary>
         internal List<RedisConfiguration> RedisConfigurations { get; set; }
+        /// <summary>
+        /// 随机数获取
+        /// </summary>
+        internal Random rd = new Random();
 
         internal EasyDoConfiguration()
         {
@@ -27,14 +31,14 @@ namespace EasyDo.Configuration
         /// </summary>
         /// <param name="databaseName">数据库名称</param>
         /// <returns>数据库连接字符串</returns>
-        public string PrimaryDataBaseConnectionString(string databaseName)
+        public string MasterDataBaseConnectionString(string databaseName)
         {
             var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
             if (dataBaseConfiguration == null)
             {
-                return null;
+                throw new ArgumentException(string.Format("数据库：{0} 主库连接未配置!", databaseName));
             }
-            return dataBaseConfiguration.PrimaryDataBaseConnection;
+            return dataBaseConfiguration.MasterDataBaseConnectionString;
         }
 
         /// <summary>
@@ -42,14 +46,17 @@ namespace EasyDo.Configuration
         /// </summary>
         /// <param name="databaseName">数据库名称</param>
         /// <returns>数据库连接字符串</returns>
-        public string SecondaryDataBaseConnectionString(string databaseName)
+        public string SlaveDataBaseConnectionString(string databaseName)
         {
             var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
             if (dataBaseConfiguration == null)
             {
-                return null;
+                throw new ArgumentException(string.Format("数据库：{0} 从库连接未配置!", databaseName));
             }
-            return dataBaseConfiguration.SecondaryDataBaseConnection ;
+
+            //随机一个从库连接
+            var index = rd.Next(0, dataBaseConfiguration.SlaveDataBaseConnectionStrings.Count);
+            return dataBaseConfiguration.SlaveDataBaseConnectionStrings[index] ;
         }
 
         /// <summary>
@@ -66,6 +73,7 @@ namespace EasyDo.Configuration
             }
             return dataBaseConfiguration.EnableSecondaryDB;
         }
+
         /// <summary>
         /// 是否启用删除
         /// </summary>
@@ -90,30 +98,5 @@ namespace EasyDo.Configuration
         {
             return RedisConfigurations.Select(m => m.Host + ":" + m.Port).ToArray();
         }
-    }
-    /// <summary>
-    /// 数据库配置信息
-    /// </summary>
-    internal class DataBaseConfiguration
-    {
-        public string DataBaseName { get; set; }
-
-        public string PrimaryDataBaseConnection { get; set; }
-
-        public string SecondaryDataBaseConnection {get;set;}
-
-        public bool EnableSecondaryDB { get; set; }
-
-        public bool DisableSoftDelete { get; set; }
-
-    }
-    /// <summary>
-    /// redis配置信息
-    /// </summary>
-    internal class RedisConfiguration
-    {
-        public int Port { get; set; }
-        public int DataBaseIndex { get; set; }
-        public string Host { get; set; }
     }
 }

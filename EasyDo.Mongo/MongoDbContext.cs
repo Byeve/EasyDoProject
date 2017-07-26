@@ -35,12 +35,7 @@ namespace EasyDo.Mongo
             {
                 return MongoClients[dbKey].GetDatabase(DbName);
             }
-            var databaseConnectionString = EasyDoConfiguration.PrimaryDataBaseConnectionString(DbName);
-
-            if (string.IsNullOrEmpty(databaseConnectionString))
-            {
-                throw new ArgumentException(string.Format("数据库：{0} 主库连接未配置!", DbName));
-            }
+            var databaseConnectionString = EasyDoConfiguration.MasterDataBaseConnectionString(DbName);
 
             var mongoClient = new MongoClient(databaseConnectionString);
             if (!MongoClients.ContainsKey(dbKey))
@@ -62,12 +57,7 @@ namespace EasyDo.Mongo
             {
                 return MongoClients[dbKey].GetDatabase(DbName);
             }
-            var databaseConnectionString = EasyDoConfiguration.SecondaryDataBaseConnectionString(DbName);
-
-            if (string.IsNullOrEmpty(databaseConnectionString))
-            {
-                throw new ArgumentException(string.Format("数据库：{0} 从库连接未配置!", DbName));
-            }
+            var databaseConnectionString = EasyDoConfiguration.SlaveDataBaseConnectionString(DbName);
 
             var mongoClient = new MongoClient(databaseConnectionString);
             if (!MongoClients.ContainsKey(dbKey))

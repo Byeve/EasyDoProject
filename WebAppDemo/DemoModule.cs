@@ -18,7 +18,7 @@ namespace WebAppDemo
             EasyDoConfigurationBulider.Bulid(settings =>
             {
                 settings
-                .DataBaseConfigurations("HC", dbcon)
+                .MasterDataBases("HC", dbcon)
                 .RedisConfigurations(RedisCacheHost, 6379);
             });
         }
