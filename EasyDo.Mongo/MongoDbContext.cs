@@ -97,7 +97,7 @@ namespace EasyDo.Mongo
             //获取实体对象信息
             var entityDescribe = entityManager.GetEntityDescribe(typeof(TEntity));
 
-            if (entityDescribe.ReadSecondary && EasyDoConfiguration.EnableSecondaryDB)
+            if (entityDescribe.ReadSecondary && EasyDoConfiguration.EnableSecondaryDB(entityDescribe.DbName))
             {
                 return SecondaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
             }

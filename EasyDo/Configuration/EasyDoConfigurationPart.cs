@@ -18,6 +18,16 @@ namespace EasyDo.Configuration
         /// <returns></returns>
         public EasyDoConfigurationPart DataBaseConfigurations(string dataBaseName, string primarydataBaseConnection, string secondaryDataBaseConnection = "")
         {
+            if (string.IsNullOrEmpty(dataBaseName))
+            {
+                throw new ArgumentException(string.Format("数据库名称不能为空！", dataBaseName));
+            }
+
+            if (string.IsNullOrEmpty(primarydataBaseConnection))
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 主库连接不能为空！", dataBaseName));
+            }
+
             var dataBaseConfiguration = Configuration.DataBaseConfigurations.Find(m => m.DataBaseName == dataBaseName);
             if (dataBaseConfiguration!=null)
             {
@@ -35,12 +45,7 @@ namespace EasyDo.Configuration
         /// <returns></returns>
         public EasyDoConfigurationPart UseSecondaryDB(string dataBaseName)
         {
-            var dataBaseConfiguration = Configuration.DataBaseConfigurations.Find(m => m.DataBaseName == dataBaseName);
-            if (dataBaseConfiguration == null || string.IsNullOrEmpty( dataBaseConfiguration.SecondaryDataBaseConnection))
-            {
-                throw new ArgumentException(string.Format("数据库：{0} 从库连接未配置！", dataBaseName));
-            }
-            Configuration.EnableSecondaryDB = true;
+            Configuration.SetEnableSecondaryDB(dataBaseName, true);
             return this;
         }
 
