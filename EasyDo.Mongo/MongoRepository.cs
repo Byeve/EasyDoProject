@@ -10,10 +10,16 @@ namespace EasyDo.Mongo
 {
     public  class MongoRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
-        private IMongoCollection<TEntity> _collection;
+        private IMongoCollection<TEntity> primaryMongoCollection;
+
+        private IMongoCollection<TEntity> secondaryMongoCollection;
         public MongoRepository(MongoDbContext dbContext)
         {
-            _collection = dbContext.GetMongoCollection<TEntity>();
+            //主库
+            primaryMongoCollection = dbContext.PrimaryMongoCollection<TEntity>();
+
+            //从库
+            secondaryMongoCollection = dbContext.SecondaryMongoCollection<TEntity>();
         }
         private bool IsSoftEntity()
         {
@@ -37,9 +43,9 @@ namespace EasyDo.Mongo
         {
             if (IsSoftEntity())
             {
-                return _collection.UpdateOne(m => m.Id.Equals(id), Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
+                return primaryMongoCollection.UpdateOne(m => m.Id.Equals(id), Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
             }
-            return _collection.DeleteOne(i => i.Id.Equals(id)).IsAcknowledged;
+            return primaryMongoCollection.DeleteOne(i => i.Id.Equals(id)).IsAcknowledged;
         }
 
         public  Task<bool> DeleteAsync(TPrimaryKey id)
@@ -54,9 +60,9 @@ namespace EasyDo.Mongo
         {
             if (IsSoftEntity())
             {
-                return _collection.UpdateMany(filter, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
+                return primaryMongoCollection.UpdateMany(filter, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
             }
-            return _collection.DeleteMany(filter).IsAcknowledged;
+            return primaryMongoCollection.DeleteMany(filter).IsAcknowledged;
         }
 
         public  Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter)
@@ -71,9 +77,9 @@ namespace EasyDo.Mongo
         {
             if (IsSoftEntity())
             {
-                return _collection.UpdateMany(Builders<TEntity>.Filter.Empty, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
+                return primaryMongoCollection.UpdateMany(Builders<TEntity>.Filter.Empty, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
             }
-            return _collection.DeleteMany(Builders<TEntity>.Filter.Empty).IsAcknowledged;
+            return primaryMongoCollection.DeleteMany(Builders<TEntity>.Filter.Empty).IsAcknowledged;
         }
 
         public  Task<bool> DeleteAllAsync()
@@ -93,9 +99,9 @@ namespace EasyDo.Mongo
             {
                 if (IsSoftEntity())
                 {
-                    return _collection.AsQueryable().Where(i => ((ISoftDelete)i).IsDeleted == false);
+                    return secondaryMongoCollection.AsQueryable().Where(i => ((ISoftDelete)i).IsDeleted == false);
                 }
-                return _collection.AsQueryable();
+                return secondaryMongoCollection.AsQueryable();
             }
         }
         public  IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter)
@@ -183,22 +189,22 @@ namespace EasyDo.Mongo
         #region Insert
         public  void Insert(TEntity entity)
         {
-            _collection.InsertOne(entity);
+            primaryMongoCollection.InsertOne(entity);
         }
 
         public  Task InsertAsync(TEntity entity)
         {
-            return _collection.InsertOneAsync(entity);
+            return primaryMongoCollection.InsertOneAsync(entity);
         }
 
         public  void Insert(IEnumerable<TEntity> entities)
         {
-            _collection.InsertMany(entities);
+            primaryMongoCollection.InsertMany(entities);
         }
 
         public  Task InsertAsync(IEnumerable<TEntity> entities)
         {
-            return _collection.InsertManyAsync(entities);
+            return primaryMongoCollection.InsertManyAsync(entities);
         }
         #endregion
 
@@ -206,7 +212,7 @@ namespace EasyDo.Mongo
 
         public  bool Update(TEntity entity)
         {
-            return _collection.ReplaceOne(i => i.Id.Equals(entity.Id), entity).IsAcknowledged;
+            return primaryMongoCollection.ReplaceOne(i => i.Id.Equals(entity.Id), entity).IsAcknowledged;
         }
 
         public  Task<bool> UpdateAsync(TEntity entity)

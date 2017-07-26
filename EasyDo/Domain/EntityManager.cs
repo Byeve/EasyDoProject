@@ -46,7 +46,7 @@ namespace EasyDo.Domain
                         continue;
                     }
                     var entityAttribute = type.GetCustomAttribute<EntityAttribute>();
-                    moduelDescribes.Add(type, new EntityDescribe { DbName = entityAttribute.DbName, TableName = entityAttribute.TableName });
+                    moduelDescribes.Add(type, new EntityDescribe { DbName = entityAttribute.DbName, TableName = entityAttribute.TableName, ReadSecondary = entityAttribute.ReadSecondary });
                 }
 
             }

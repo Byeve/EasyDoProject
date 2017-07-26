@@ -14,40 +14,90 @@ namespace EasyDo.Mongo
         private readonly EasyDoConfiguration EasyDoConfiguration;
         private readonly EntityManager entityManager;
 
+        private readonly string PrimaryDB = "PrimaryDB";
+        private readonly string SecondaryDB = "SecondaryDB";
+
         public MongoDbContext(EasyDoConfiguration EasyDoConfiguration, EntityManager entityManager)
         {
             this.EasyDoConfiguration = EasyDoConfiguration;
             this.entityManager = entityManager;
         }
-        private IMongoDatabase GetDatabase(string DbName)
+        /// <summary>
+        /// 获取主库
+        /// </summary>
+        /// <param name="DbName"></param>
+        /// <returns></returns>
+        private IMongoDatabase PrimaryDatabase(string DbName)
         {
-            if (MongoClients.ContainsKey(DbName))
+            var dbKey = DbName + PrimaryDB;
+            if (MongoClients.ContainsKey(dbKey))
             {
-                return MongoClients[DbName].GetDatabase(DbName);
+                return MongoClients[dbKey].GetDatabase(DbName);
             }
-            else
-            {
-                var databaseConnectionString = EasyDoConfiguration.DatabaseConnectionString(DbName);
-                if (string.IsNullOrEmpty(databaseConnectionString))
-                {
-                    throw new ArgumentException("数据库：{0} 连接未配置!");
-                }
-                var mongoClient = new MongoClient(databaseConnectionString);
-                if (!MongoClients.ContainsKey(DbName))
-                {
-                    MongoClients.Add(DbName, mongoClient);
-                }
-                return mongoClient.GetDatabase(DbName);
+            var databaseConnectionString = EasyDoConfiguration.PrimaryDataBaseConnectionString(DbName);
 
-            };
+            if (string.IsNullOrEmpty(databaseConnectionString))
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 主库连接未配置!", DbName));
+            }
+
+            var mongoClient = new MongoClient(databaseConnectionString);
+            if (!MongoClients.ContainsKey(dbKey))
+            {
+                MongoClients.Add(dbKey, mongoClient);
+            }
+            return mongoClient.GetDatabase(DbName);
+        }
+        /// <summary>
+        /// 获取从库
+        /// </summary>
+        /// <param name="DbName"></param>
+        /// <returns></returns>
+        private IMongoDatabase SecondaryDatabase(string DbName)
+        {
+            var dbKey = DbName + SecondaryDB;
+            if (MongoClients.ContainsKey(dbKey))
+            {
+                return MongoClients[dbKey].GetDatabase(DbName);
+            }
+            var databaseConnectionString = EasyDoConfiguration.SecondaryDataBaseConnectionString(DbName);
+
+            if (string.IsNullOrEmpty(databaseConnectionString))
+            {
+                throw new ArgumentException(string.Format("数据库：{0} 从库连接未配置!", DbName));
+            }
+
+            var mongoClient = new MongoClient(databaseConnectionString);
+            if (!MongoClients.ContainsKey(dbKey))
+            {
+                MongoClients.Add(dbKey, mongoClient);
+            }
+            return mongoClient.GetDatabase(DbName);
         }
 
-        public IMongoCollection<TEntity> GetMongoCollection<TEntity>() where TEntity : class
+        public IMongoCollection<TEntity> PrimaryMongoCollection<TEntity>() where TEntity : class
         {
             var entityDescribe = entityManager.GetEntityDescribe(typeof(TEntity));
 
-            return GetDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
+            return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
             
+        }
+        /// <summary>
+        /// 获取从库MongoCollection
+        /// </summary>
+        /// <typeparam name="TEntity">实体类型</typeparam>
+        /// <returns></returns>
+        public IMongoCollection<TEntity> SecondaryMongoCollection<TEntity>() where TEntity : class
+        {
+            //获取实体对象信息
+            var entityDescribe = entityManager.GetEntityDescribe(typeof(TEntity));
+
+            if (entityDescribe.ReadSecondary && EasyDoConfiguration.EnableSecondaryDB)
+            {
+                return SecondaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
+            }
+
+            return PrimaryDatabase(entityDescribe.DbName).GetCollection<TEntity>(entityDescribe.TableName);
         }
     }
 }

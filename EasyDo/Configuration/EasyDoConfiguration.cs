@@ -20,19 +20,40 @@ namespace EasyDo.Configuration
         /// 是否使用Redis
         /// </summary>
         public bool EnableRedis { get; internal set; }
+
+        /// <summary>
+        /// 是否启用从库（读从库）
+        /// </summary>
+        public bool EnableSecondaryDB { get; internal set; }
+
         /// <summary>
         /// 根据数据库名称 获取数据库连接
         /// </summary>
         /// <param name="databaseName">数据库名称</param>
         /// <returns>数据库连接字符串</returns>
-        public string DatabaseConnectionString(string databaseName)
+        public string PrimaryDataBaseConnectionString(string databaseName)
         {
             var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
             if (dataBaseConfiguration == null)
             {
-                return "";
+                return null;
             }
-            return dataBaseConfiguration.DataBaseConnection;
+            return dataBaseConfiguration.PrimaryDataBaseConnection;
+        }
+
+        /// <summary>
+        /// 根据数据库名称 获取从库数据库连接
+        /// </summary>
+        /// <param name="databaseName">数据库名称</param>
+        /// <returns>数据库连接字符串</returns>
+        public string SecondaryDataBaseConnectionString(string databaseName)
+        {
+            var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
+            if (dataBaseConfiguration == null)
+            {
+                return null;
+            }
+            return dataBaseConfiguration.SecondaryDataBaseConnection ;
         }
         /// <summary>
         /// redis 配置信息
@@ -49,7 +70,10 @@ namespace EasyDo.Configuration
     internal class DataBaseConfiguration
     {
         public string DataBaseName { get; set; }
-        public string DataBaseConnection { get; set; }
+
+        public string PrimaryDataBaseConnection { get; set; }
+
+        public string SecondaryDataBaseConnection {get;set;}
     }
     /// <summary>
     /// redis配置信息
