@@ -11,9 +11,6 @@ namespace EasyDo.Mongo
         private readonly EasyDoConfiguration EasyDoConfiguration;
         private readonly EntityManager entityManager;
 
-        private const string PrimaryDB = "PrimaryDB";
-        private const string SecondaryDB = "SecondaryDB";
-
         public MongoDbContext(EasyDoConfiguration EasyDoConfiguration, EntityManager entityManager)
         {
             this.EasyDoConfiguration = EasyDoConfiguration;
