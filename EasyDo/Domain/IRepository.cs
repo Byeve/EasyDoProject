@@ -1,5 +1,4 @@
-﻿using EasyDo.Dependency;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EasyDo.Domain
 {
-    public interface IRepository<TEntity, TPrimaryKey>  where TEntity : class, IEntity<TPrimaryKey>
+    public interface IRepositoryRoot<TEntity, TPrimaryKey>  where TEntity : class, IEntity<TPrimaryKey>
     {
         IQueryable<TEntity> Table { get; }
 
@@ -37,7 +36,7 @@ namespace EasyDo.Domain
         Task<bool> UpdateAsync(TEntity entity);
     }
 
-    public interface IRepository<TEntity> : IRepository<TEntity, string> where TEntity : class, IEntity<string>
+    public interface IRepository<TEntity> : IRepositoryRoot<TEntity, string> where TEntity : class, IEntity<string>
     {
 
     }
