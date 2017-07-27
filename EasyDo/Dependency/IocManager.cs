@@ -93,7 +93,7 @@ namespace EasyDo.Dependency
             List<AspectAttribute> interceptorAttributes = new List<AspectAttribute>();
             foreach (var method in methods)
             {
-                var aspectAttributes = method.GetCustomAttributes(true).Select(m => m.GetType().IsAssignableTo<AspectAttribute>()).Cast<AspectAttribute>();
+                var aspectAttributes = method.GetCustomAttributes(true).Where(m => m.GetType().IsAssignableTo<AspectAttribute>()).Cast<AspectAttribute>();
                 if (aspectAttributes.Any())
                 {
                     interceptorAttributes.AddRange(aspectAttributes);
