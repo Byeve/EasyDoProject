@@ -10,6 +10,7 @@ namespace Demo.Services
     {
         public TeacherService(IRepository<Teacher> repository) : base(repository)
         {
+            
         }
     }
 }

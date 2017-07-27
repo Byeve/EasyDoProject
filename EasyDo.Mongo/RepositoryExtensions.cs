@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace EasyDo.Mongo
+namespace EasyDo.Mongo.RepositoryExtend
 {
-    public static class RepositoryExtensions
+    public static class RepositoryRootExtend
     {
         public static IMongoCollection<TEntity> MongoCollection<TEntity, TPrimaryKey>(this IRepositoryRoot<TEntity, TPrimaryKey> repository) where TEntity : class, IEntity<TPrimaryKey>
         {
