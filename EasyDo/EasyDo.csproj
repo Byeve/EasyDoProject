@@ -80,7 +80,7 @@
     <Compile Include="Domain\EntityDescribe.cs" />
     <Compile Include="Domain\EntityManager.cs" />
     <Compile Include="Domain\IEntity.cs" />
-    <Compile Include="Domain\IRepository.cs" />
+    <Compile Include="Domain\IRepositoryRoot.cs" />
     <Compile Include="Domain\ISoftDelete.cs" />
     <Compile Include="Extension\ListExtension.cs" />
     <Compile Include="KernelModule.cs" />

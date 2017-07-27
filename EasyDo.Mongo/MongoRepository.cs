@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasyDo.Mongo
 {
-    public  class MongoRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
+    public  class MongoRepository<TEntity, TPrimaryKey> : IRepositoryRoot<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
         private readonly IMongoDbContext dbContext;
 
