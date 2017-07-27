@@ -1,14 +1,12 @@
 ﻿using EasyDo.Configuration;
 using EasyDo.Domain;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-
+using System.Collections.Concurrent;
 namespace EasyDo.Mongo
 {
     public class MongoDbContext : IMongoDbContext
     {
-        private static Dictionary<string, MongoClient> MongoClients = new Dictionary<string, MongoClient>();
+        private static ConcurrentDictionary<string, MongoClient> MongoClients = new ConcurrentDictionary<string, MongoClient>();
 
         private readonly EasyDoConfiguration EasyDoConfiguration;
         private readonly EntityManager entityManager;
@@ -30,17 +28,17 @@ namespace EasyDo.Mongo
         /// <returns></returns>
         private IMongoDatabase MasterDatabase(string DbName)
         {
-            var dbKey = DbName + PrimaryDB;
-            if (MongoClients.ContainsKey(dbKey))
-            {
-                return MongoClients[dbKey].GetDatabase(DbName);
-            }
+
             var databaseConnectionString = EasyDoConfiguration.MasterDataBaseConnectionString(DbName);
+            if (MongoClients.ContainsKey(databaseConnectionString))
+            {
+                return MongoClients[databaseConnectionString].GetDatabase(DbName);
+            }
 
             var mongoClient = new MongoClient(databaseConnectionString);
-            if (!MongoClients.ContainsKey(dbKey))
+            if (!MongoClients.ContainsKey(databaseConnectionString))
             {
-                MongoClients.Add(dbKey, mongoClient);
+                MongoClients.TryAdd(databaseConnectionString, mongoClient);
             }
             return mongoClient.GetDatabase(DbName);
         }
@@ -52,18 +50,14 @@ namespace EasyDo.Mongo
         /// <returns></returns>
         private IMongoDatabase SlaveDatabase(string DbName)
         {
-            var dbKey = DbName + SecondaryDB;
-            if (MongoClients.ContainsKey(dbKey))
-            {
-                return MongoClients[dbKey].GetDatabase(DbName);
-            }
-            var databaseConnectionString = EasyDoConfiguration.SlaveDataBaseConnectionString(DbName);
 
-            var mongoClient = new MongoClient(databaseConnectionString);
-            if (!MongoClients.ContainsKey(dbKey))
+            var databaseConnectionString = EasyDoConfiguration.SlaveDataBaseConnectionString(DbName);
+            if (MongoClients.ContainsKey(databaseConnectionString))
             {
-                MongoClients.Add(dbKey, mongoClient);
+                return MongoClients[databaseConnectionString].GetDatabase(DbName);
             }
+            var mongoClient = new MongoClient(databaseConnectionString);
+            MongoClients.TryAdd(databaseConnectionString, mongoClient);
             return mongoClient.GetDatabase(DbName);
         }
 
