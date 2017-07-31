@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace EasyDo.Application
 {
-    public interface IApplicationService<TEntity> : ITransientDependency
+    public interface IApplicationService<TEntity> : IApplicationService
     {
         bool Delete(TEntity entity);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending =true);
@@ -15,5 +15,10 @@ namespace EasyDo.Application
         void Insert(TEntity entity);
         void Insert(IEnumerable<TEntity> entities);
         bool Update(TEntity entity);
+    }
+
+    public interface IApplicationService: ITransientDependency
+    {
+
     }
 }
