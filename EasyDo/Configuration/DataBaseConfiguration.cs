@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace EasyDo.Configuration
 {
@@ -17,7 +13,7 @@ namespace EasyDo.Configuration
 
         public List<string> SlaveDataBaseConnectionStrings { get; set; }
 
-        public bool EnableSecondaryDB { get; set; }
+        public bool EnableSecondaryDb { get; set; }
 
         public bool DisableSoftDelete { get; set; }
     }

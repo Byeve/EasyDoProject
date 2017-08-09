@@ -11,27 +11,27 @@ namespace EasyDo.Mvc
     public abstract class EasyDoWebApplication<TStartupModule> : HttpApplication
        where TStartupModule : EasyDoModule
     {
-        public static Bootstrapper _bootstrapper { get; } = Bootstrapper.Create<TStartupModule>();
+        public static Bootstrapper Bootstrapper { get; } = Bootstrapper.Create<TStartupModule>();
 
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             //MVC
-            _bootstrapper.IocManager.ContainerBuilder.RegisterControllers(typeof(TStartupModule).Assembly);
+            Bootstrapper.IocManager.ContainerBuilder.RegisterControllers(typeof(TStartupModule).Assembly);
 
             //WebAPI
-            _bootstrapper.IocManager.ContainerBuilder.RegisterApiControllers(typeof(TStartupModule).Assembly);
+            Bootstrapper.IocManager.ContainerBuilder.RegisterApiControllers(typeof(TStartupModule).Assembly);
 
-            _bootstrapper.Initialize();
+            Bootstrapper.Initialize();
 
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(_bootstrapper.IocManager.Container));
-            GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(_bootstrapper.IocManager.Container);
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(Bootstrapper.IocManager.Container));
+            GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(Bootstrapper.IocManager.Container);
 
 
         }
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
-            _bootstrapper.Dispose();
+            Bootstrapper.Dispose();
         }
     }
 }

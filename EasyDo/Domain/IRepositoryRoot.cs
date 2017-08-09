@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EasyDo.Domain
 {
-    public interface IRepositoryRoot<TEntity, TPrimaryKey>  where TEntity : class, IEntity<TPrimaryKey>
+    public interface IRepositoryRoot<TEntity, in TPrimaryKey>  where TEntity : class, IEntity<TPrimaryKey>
     {
         IQueryable<TEntity> Table { get; }
 

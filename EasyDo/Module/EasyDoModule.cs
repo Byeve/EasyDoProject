@@ -5,7 +5,7 @@ namespace EasyDo.Module
 {
     public abstract class EasyDoModule
     {
-        public IocManager iocManager { get; set; }
+        public IocManager IocManager { get; set; }
         public virtual void PreInitialize()
         {
 

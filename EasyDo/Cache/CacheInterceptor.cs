@@ -7,12 +7,12 @@ namespace EasyDo.Cache
 {
 	public class CacheInterceptor : IInterceptor
 	{
-		private readonly ICache cache;
+		private readonly ICache _cache;
 
 		private const char TypeSeperator = '|';
 		public CacheInterceptor(ICache cache)
 		{
-			this.cache = cache;
+            _cache = cache;
 		}
 		public void Intercept(IInvocation invocation)
 		{
@@ -25,7 +25,7 @@ namespace EasyDo.Cache
 			}
 			var cacheKey = string.Concat(invocation.Method.Name, JsonConvert.SerializeObject(invocation.Arguments));
 
-			var value = cache.Get<string>(cacheKey, () => 
+			var value = _cache.Get(cacheKey, () => 
             {
 			    invocation.Proceed();
 				return SerializeWithType(invocation.ReturnValue, invocation.Method.ReturnType);

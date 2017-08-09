@@ -95,7 +95,7 @@ namespace EasyDo.Configuration
             {
                 throw new ArgumentException(string.Format("数据库：{0} 必须配置至少一个从库连接字符串！", dataBaseName));
             }
-            dataBaseConfiguration.EnableSecondaryDB = true;
+            dataBaseConfiguration.EnableSecondaryDb = true;
             return this;
         }
 

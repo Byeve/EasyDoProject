@@ -9,7 +9,7 @@ namespace EasyDo.Module
 {
     public class EasyDoModuleManager
     {
-        private List<EasyDoModule> modules;
+        private List<EasyDoModule> _modules;
 
         internal List<Assembly> AllModuleAssembly { get; private set; }
 
@@ -25,32 +25,35 @@ namespace EasyDo.Module
         /// <param name="startupModule">启动模块</param>
         public static EasyDoModuleManager Build(IocManager iocManager, Type startupModule)
         {
-            var EasyDoModuleManager = new EasyDoModuleManager();
+            var easyDoModuleManager = new EasyDoModuleManager();
 
-            if (!EasyDoModuleManager.IsHcModule(startupModule))
+            if (!easyDoModuleManager.IsHcModule(startupModule))
             {
-                throw new ArgumentException(string.Format("模块:{0}不能是HcModule类型", startupModule.Name));
+                throw new ArgumentException($"模块:{startupModule.Name}不能是HcModule类型");
             }
-            var hcModuleInfos = EasyDoModuleManager.FindDependedModuleTypesRecursivelyIncludingGivenModule(startupModule);
+            var hcModuleInfos = easyDoModuleManager.FindDependedModuleTypesRecursivelyIncludingGivenModule(startupModule);
 
-            EasyDoModuleManager.modules = new List<EasyDoModule>();
+            easyDoModuleManager._modules = new List<EasyDoModule>();
             foreach (var moduleInfo in hcModuleInfos)
             {
                 var module = Activator.CreateInstance(moduleInfo.Type) as EasyDoModule;
 
-                EasyDoModuleManager.AllModuleAssembly.Add(moduleInfo.Type.Assembly);
+                easyDoModuleManager.AllModuleAssembly.Add(moduleInfo.Type.Assembly);
 
-                module.iocManager = iocManager;
-                EasyDoModuleManager.modules.Add(module);
+                if (module != null)
+                {
+                    module.IocManager = iocManager;
+                    easyDoModuleManager._modules.Add(module);
+                }
             }
 
-            EasyDoModuleManager.modules.ForEach(m => m.PreInitialize());
-            EasyDoModuleManager.modules.ForEach(m => m.Initialize());
+            easyDoModuleManager._modules.ForEach(m => m.PreInitialize());
+            easyDoModuleManager._modules.ForEach(m => m.Initialize());
 
             //自我注册
-            iocManager.ContainerBuilder.RegisterInstance(EasyDoModuleManager).SingleInstance();
+            iocManager.ContainerBuilder.RegisterInstance(easyDoModuleManager).SingleInstance();
 
-            return EasyDoModuleManager;
+            return easyDoModuleManager;
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace EasyDo.Module
         /// </summary>
         public void Shutdown()
         {
-            modules.ForEach(m => m.Shutdown());
+            _modules.ForEach(m => m.Shutdown());
         }
 
         private bool IsHcModule(Type type)
@@ -75,32 +78,32 @@ namespace EasyDo.Module
             var hcModuleInfos = new List<EasyDoModuleInfo>();
             AddModuleAndDependenciesRecursively(hcModuleInfos, moduleType);
 
-            var SortHcModuleInfos = new List<EasyDoModuleInfo>();
+            var sortHcModuleInfos = new List<EasyDoModuleInfo>();
 
-            SortByDependencies(hcModuleInfos.Find(m => m.Type == moduleType), hcModuleInfos, SortHcModuleInfos);
+            SortByDependencies(hcModuleInfos.Find(m => m.Type == moduleType), hcModuleInfos, sortHcModuleInfos);
 
-            return SortHcModuleInfos;
+            return sortHcModuleInfos;
         }
 
-        private void AddModuleAndDependenciesRecursively(List<EasyDoModuleInfo> HcModuleInfos, Type module)
+        private void AddModuleAndDependenciesRecursively(List<EasyDoModuleInfo> hcModuleInfos, Type module)
         {
             if (!IsHcModule(module))
             {
                 throw new ArgumentException("This type is not an EasyDo module: " + module.AssemblyQualifiedName);
             }
 
-            if (HcModuleInfos.Find(m => m.Type == module) != null)
+            if (hcModuleInfos.Find(m => m.Type == module) != null)
             {
                 return;
             }
 
             var dependedModules = FindDependedModuleTypes(module);
 
-            HcModuleInfos.Add(new EasyDoModuleInfo { DependedModuleTypes = dependedModules, Type = module });
+            hcModuleInfos.Add(new EasyDoModuleInfo { DependedModuleTypes = dependedModules, Type = module });
 
             foreach (var dependedModule in dependedModules)
             {
-                AddModuleAndDependenciesRecursively(HcModuleInfos, dependedModule);
+                AddModuleAndDependenciesRecursively(hcModuleInfos, dependedModule);
             }
         }
 
@@ -130,9 +133,11 @@ namespace EasyDo.Module
         /// <summary>
         /// 依赖模块进行排序
         /// </summary>
-        /// <param name="HcModuleInfos">模块集合</param>
+        /// <param name="hcModuleInfo">模块集合</param>
+        /// <param name="noSortHcModuleInfos"></param>
+        /// <param name="sortHcModuleInfos"></param>
         /// <returns>排序模块集合</returns>
-        private void SortByDependencies(EasyDoModuleInfo hcModuleInfo, List<EasyDoModuleInfo> NoSortHcModuleInfos, List<EasyDoModuleInfo> SortHcModuleInfos)
+        private void SortByDependencies(EasyDoModuleInfo hcModuleInfo, List<EasyDoModuleInfo> noSortHcModuleInfos, List<EasyDoModuleInfo> sortHcModuleInfos)
         {
             if (hcModuleInfo.Visited)
             {
@@ -140,29 +145,29 @@ namespace EasyDo.Module
             }
 
             hcModuleInfo.Visited = true;
-            if (!SortHcModuleInfos.Contains(hcModuleInfo))
+            if (!sortHcModuleInfos.Contains(hcModuleInfo))
             {
-                SortHcModuleInfos.Add(hcModuleInfo);
+                sortHcModuleInfos.Add(hcModuleInfo);
             }
 
 
             foreach (var type in hcModuleInfo.DependedModuleTypes)
             {
-                var find = SortHcModuleInfos.Find(m => m.Type == type);
+                var find = sortHcModuleInfos.Find(m => m.Type == type);
                 if (find != null)
                 {
-                    SortHcModuleInfos.Remove(find);
+                    sortHcModuleInfos.Remove(find);
                 }
-                var index = SortHcModuleInfos.FindIndex(m => m.Type == hcModuleInfo.Type);
-                SortHcModuleInfos.Insert(index, NoSortHcModuleInfos.Find(m => m.Type == type));
+                var index = sortHcModuleInfos.FindIndex(m => m.Type == hcModuleInfo.Type);
+                sortHcModuleInfos.Insert(index, noSortHcModuleInfos.Find(m => m.Type == type));
             }
 
-            if (SortHcModuleInfos.Find(m => m.Visited == false) == null)
+            if (sortHcModuleInfos.Find(m => m.Visited == false) == null)
             {
                 return;
             }
-            var moduleInfo = SortHcModuleInfos.FindLast(m => m.Visited == false);
-            SortByDependencies(moduleInfo, NoSortHcModuleInfos, SortHcModuleInfos);
+            var moduleInfo = sortHcModuleInfos.FindLast(m => m.Visited == false);
+            SortByDependencies(moduleInfo, noSortHcModuleInfos, sortHcModuleInfos);
         }
 
 

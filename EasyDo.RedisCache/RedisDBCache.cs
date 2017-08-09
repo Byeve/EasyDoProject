@@ -4,17 +4,17 @@ using System;
 
 namespace EasyDo.RedisCache
 {
-    public class RedisDBCache : ICache, ISingletonDependency
+    public class RedisDbCache : ICache, ISingletonDependency
     {
 
-        private RedisDBUtility _redisDBUtility;
-        public RedisDBCache(RedisDBUtility RedisDBUtility)
+        private readonly RedisDbUtility _redisDbUtility;
+        public RedisDbCache(RedisDbUtility redisDbUtility)
         {
-            _redisDBUtility = RedisDBUtility;
+            _redisDbUtility = redisDbUtility;
         }
         public T Get<T>(string key)
         {
-            using (var cilent = _redisDBUtility.GetRedisClient())
+            using (var cilent = _redisDbUtility.GetRedisClient())
             {
 
                 return cilent.Get<T>(key);
@@ -23,7 +23,7 @@ namespace EasyDo.RedisCache
 
         public T Get<T>(string key, Func<T> func, int cacheTime=30)
         {
-            using (var cilent = _redisDBUtility.GetRedisClient())
+            using (var cilent = _redisDbUtility.GetRedisClient())
             {
                 
                 var res = cilent.Get<T>(key);
@@ -33,7 +33,7 @@ namespace EasyDo.RedisCache
                 }
 
                 var value = func();
-                Set<T>(key, value, cacheTime);
+                Set(key, value, cacheTime);
 
                 return value;
             }
@@ -41,7 +41,7 @@ namespace EasyDo.RedisCache
 
         public bool Remove(string key)
         {
-            using (var cilent = _redisDBUtility.GetRedisClient())
+            using (var cilent = _redisDbUtility.GetRedisClient())
             {
                 return cilent.Remove(key);
             }
@@ -49,7 +49,7 @@ namespace EasyDo.RedisCache
 
         public long Increment(string key, uint value)
         {
-            using (var cilent = _redisDBUtility.GetRedisClient())
+            using (var cilent = _redisDbUtility.GetRedisClient())
             {
                 return cilent.Increment(key, value);
             }
@@ -57,7 +57,7 @@ namespace EasyDo.RedisCache
 
         public long Decrement(string key, uint value)
         {
-            using (var cilent = _redisDBUtility.GetRedisClient())
+            using (var cilent = _redisDbUtility.GetRedisClient())
             {
                 return cilent.Decrement(key, value);
             }
@@ -65,13 +65,9 @@ namespace EasyDo.RedisCache
 
         public bool Set<T>(string key, T data, int cacheTime=30)
         {
-            using (var cilent = _redisDBUtility.GetRedisClient())
+            using (var cilent = _redisDbUtility.GetRedisClient())
             {
-                if (cacheTime > 0)
-                {
-                    return cilent.Set<T>(key, data, DateTime.Now.AddMinutes(cacheTime));
-                }
-                return cilent.Set<T>(key, data, DateTime.Now.AddMinutes(60));
+                return cacheTime > 0 ? cilent.Set(key, data, DateTime.Now.AddMinutes(cacheTime)) : cilent.Set(key, data, DateTime.Now.AddMinutes(60));
             }
         }
     }

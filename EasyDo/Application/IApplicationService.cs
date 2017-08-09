@@ -15,7 +15,7 @@ namespace EasyDo.Application
         TEntity FirstOrDefault(Expression<Func<TEntity, bool>> filter);
         bool Any(Expression<Func<TEntity, bool>> filter);
         long Count(Expression<Func<TEntity, bool>> filter);
-        TEntity GetById(string Id);
+        TEntity GetById(string id);
         void Insert(TEntity entity);
         void Insert(IEnumerable<TEntity> entities);
         bool Update(TEntity entity);

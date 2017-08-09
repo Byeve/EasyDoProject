@@ -2,7 +2,7 @@
 
 namespace EasyDo.Domain
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class EntityAttribute : Attribute
     {
         /// <summary>

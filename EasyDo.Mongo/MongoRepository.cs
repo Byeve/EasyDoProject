@@ -10,36 +10,24 @@ namespace EasyDo.Mongo
 {
     public  class MongoRepository<TEntity, TPrimaryKey> : IRepositoryRoot<TEntity, TPrimaryKey> where TEntity : class, IEntity<TPrimaryKey>
     {
-        private readonly IMongoDbContext dbContext;
+        private readonly IMongoDbContext _dbContext;
 
         //初始化
         public MongoRepository(IMongoDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
         //主库
-        private IMongoCollection<TEntity> primaryMongoCollection
-        {
-            get
-            {
-                return dbContext.MasterMongoCollection<TEntity>();
-            }
-        }
+        private IMongoCollection<TEntity> PrimaryMongoCollection => _dbContext.MasterMongoCollection<TEntity>();
 
         //从库
-        private IMongoCollection<TEntity> secondaryMongoCollection
-        {
-            get
-            {
-                return dbContext.SlaveMongoCollection<TEntity>();
-            }
-        }
+        private IMongoCollection<TEntity> SecondaryMongoCollection => _dbContext.SlaveMongoCollection<TEntity>();
 
         //是否软删除
         private  bool IsSoftEntity()
         {
-            return dbContext.EnableSoftDelete<TEntity>() && typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity));
+            return _dbContext.EnableSoftDelete<TEntity>() && typeof(ISoftDelete).IsAssignableFrom(typeof(TEntity));
         }
         #region Delete
 
@@ -50,60 +38,36 @@ namespace EasyDo.Mongo
 
         public virtual Task<bool> DeleteAsync(TEntity entity)
         {
-            return Task.Run(() =>
-            {
-                return Delete(entity);
-            });
+            return Task.Run(() => Delete(entity));
         }
         public virtual bool Delete(TPrimaryKey id)
         {
-            if (IsSoftEntity())
-            {
-                return primaryMongoCollection.UpdateOne(m => m.Id.Equals(id), Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
-            }
-            return primaryMongoCollection.DeleteOne(i => i.Id.Equals(id)).IsAcknowledged;
+            return IsSoftEntity() ? PrimaryMongoCollection.UpdateOne(m => m.Id.Equals(id), Builders<TEntity>.Update.Set(i => ((ISoftDelete) i).IsDeleted, true)).IsAcknowledged : PrimaryMongoCollection.DeleteOne(i => i.Id.Equals(id)).IsAcknowledged;
         }
 
         public virtual Task<bool> DeleteAsync(TPrimaryKey id)
         {
-            return Task.Run(() =>
-            {
-                return Delete(id);
-            });
+            return Task.Run(() => Delete(id));
         }
 
         public virtual bool Delete(Expression<Func<TEntity, bool>> filter)
         {
-            if (IsSoftEntity())
-            {
-                return primaryMongoCollection.UpdateMany(filter, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
-            }
-            return primaryMongoCollection.DeleteMany(filter).IsAcknowledged;
+            return IsSoftEntity() ? PrimaryMongoCollection.UpdateMany(filter, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged : PrimaryMongoCollection.DeleteMany(filter).IsAcknowledged;
         }
 
         public virtual Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter)
         {
-            return Task.Run(() =>
-            {
-                return Delete(filter);
-            });
+            return Task.Run(() => Delete(filter));
         }
 
         public virtual bool DeleteAll()
         {
-            if (IsSoftEntity())
-            {
-                return primaryMongoCollection.UpdateMany(Builders<TEntity>.Filter.Empty, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged;
-            }
-            return primaryMongoCollection.DeleteMany(Builders<TEntity>.Filter.Empty).IsAcknowledged;
+            return IsSoftEntity() ? PrimaryMongoCollection.UpdateMany(Builders<TEntity>.Filter.Empty, Builders<TEntity>.Update.Set(i => ((ISoftDelete)i).IsDeleted, true)).IsAcknowledged : PrimaryMongoCollection.DeleteMany(Builders<TEntity>.Filter.Empty).IsAcknowledged;
         }
 
         public virtual Task<bool> DeleteAllAsync()
         {
-            return Task.Run(() =>
-            {
-                return DeleteAll();
-            });
+            return Task.Run(() => DeleteAll());
         }
         #endregion Delete
 
@@ -113,11 +77,7 @@ namespace EasyDo.Mongo
         {
             get
             {
-                if (IsSoftEntity())
-                {
-                    return secondaryMongoCollection.AsQueryable().Where(i => ((ISoftDelete)i).IsDeleted == false);
-                }
-                return secondaryMongoCollection.AsQueryable();
+                return IsSoftEntity() ? SecondaryMongoCollection.AsQueryable().Where(i => ((ISoftDelete) i).IsDeleted == false) : SecondaryMongoCollection.AsQueryable();
             }
         }
 
@@ -157,22 +117,22 @@ namespace EasyDo.Mongo
         #region Insert
         public virtual void Insert(TEntity entity)
         {
-            primaryMongoCollection.InsertOne(entity);
+            PrimaryMongoCollection.InsertOne(entity);
         }
 
         public virtual Task InsertAsync(TEntity entity)
         {
-            return primaryMongoCollection.InsertOneAsync(entity);
+            return PrimaryMongoCollection.InsertOneAsync(entity);
         }
 
         public virtual void Insert(IEnumerable<TEntity> entities)
         {
-            primaryMongoCollection.InsertMany(entities);
+            PrimaryMongoCollection.InsertMany(entities);
         }
 
         public virtual Task InsertAsync(IEnumerable<TEntity> entities)
         {
-            return primaryMongoCollection.InsertManyAsync(entities);
+            return PrimaryMongoCollection.InsertManyAsync(entities);
         }
         #endregion
 
@@ -180,7 +140,7 @@ namespace EasyDo.Mongo
 
         public virtual bool Update(TEntity entity)
         {
-            return primaryMongoCollection.ReplaceOne(i => i.Id.Equals(entity.Id), entity).IsAcknowledged;
+            return PrimaryMongoCollection.ReplaceOne(i => i.Id.Equals(entity.Id), entity).IsAcknowledged;
         }
 
         public virtual Task<bool> UpdateAsync(TEntity entity)

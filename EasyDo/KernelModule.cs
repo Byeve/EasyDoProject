@@ -9,11 +9,11 @@ namespace EasyDo
     {
         public override void PreInitialize()
         {
-          iocManager.ContainerBuilder.RegisterModule(new Log4netModule());
+          IocManager.ContainerBuilder.RegisterModule(new Log4NetModule());
         }
         public override void Initialize()
         {
-            iocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }
 }

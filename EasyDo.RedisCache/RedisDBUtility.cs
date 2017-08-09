@@ -4,12 +4,12 @@ using ServiceStack.Redis;
 
 namespace EasyDo.RedisCache
 {
-    public class RedisDBUtility : ISingletonDependency
+    public class RedisDbUtility : ISingletonDependency
     {
-        private PooledRedisClientManager prcm = null;
-        public RedisDBUtility(EasyDoConfiguration EasyDoConfiguration)
+        private readonly PooledRedisClientManager _prcm;
+        public RedisDbUtility(EasyDoConfiguration easyDoConfiguration)
         {
-            prcm = CreateManager(EasyDoConfiguration.RedisConnectionStrings(), EasyDoConfiguration.RedisConnectionStrings());
+            _prcm = CreateManager(easyDoConfiguration.RedisConnectionStrings(), easyDoConfiguration.RedisConnectionStrings());
            // ServiceStack.Licensing.RegisterLicense(@"2238-e1JlZjoyMjM4LE5hbWU6MzFIdWlZaSxUeXBlOlJlZGlzQnVzaW5lc3MsSGFzaDp1N01oOGgwdmx0RlJ1UU9LOUZMWEszalNJWVB4UUZtN0tmK3FtdG9sWE9iTGRkdjIrbEtUSTlKYnZkTE90Q2g5QnNDOWFEQTZJTSswdjhucDdjMzVyZUQyVExTYWRFdHNWSzFRV3cxTkhSWjhpWDJFSGhDdit2NHZmM1NYaVIxMDVwTG1iK0ZOZFBKYlpWSzYzK3BOR0tLbldSV3prc2FJd0ZEMmJTbGltdjg9LEV4cGlyeToyMDE2LTAyLTExfQ==");
         }
 
@@ -26,7 +26,7 @@ namespace EasyDo.RedisCache
 
         public IRedisClient GetRedisClient()
         {
-            return prcm.GetClient();
+            return _prcm.GetClient();
         }
     }
 }

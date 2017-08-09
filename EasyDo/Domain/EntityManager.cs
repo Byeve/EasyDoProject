@@ -9,44 +9,45 @@ namespace EasyDo.Domain
 {
     public class EntityManager
     {
-        private  Dictionary<Type, EntityDescribe> moduelDescribes = new Dictionary<Type, EntityDescribe>();
+        private readonly Dictionary<Type, EntityDescribe> _moduelDescribes = new Dictionary<Type, EntityDescribe>();
 
         private EntityManager()
         {
 
         }
 
-        public static EntityManager Bulid(IocManager IocManager, List<Assembly> EasyDoDependcyAssemblies)
+        public static EntityManager Bulid(IocManager iocManager, List<Assembly> easyDoDependcyAssemblies)
         {
             var entityManager = new EntityManager();
-            entityManager.Scan(EasyDoDependcyAssemblies);
+            entityManager.Scan(easyDoDependcyAssemblies);
             //自我注册
-            IocManager.ContainerBuilder.RegisterInstance(entityManager).SingleInstance();
+            iocManager.ContainerBuilder.RegisterInstance(entityManager).SingleInstance();
 
             return entityManager;
         }
         /// <summary>
         /// 扫描程序集 实体对象
         /// </summary>
-        /// <param name="Assemblies"></param>
-        private void Scan(List<Assembly> Assemblies)
+        /// <param name="assemblies"></param>
+        private void Scan(List<Assembly> assemblies)
         {
-            foreach (var assembly in Assemblies)
+            foreach (var assembly in assemblies)
             {
                 var types = assembly.GetExportedTypes().Where(m => m.GetCustomAttribute<EntityAttribute>() != null);
-                if (!types.Any())
+                var enumerable = types as Type[] ?? types.ToArray();
+                if (!enumerable.Any())
                 {
                     continue;
                 }
 
-                foreach (var type in types)
+                foreach (var type in enumerable)
                 {
-                    if (moduelDescribes.ContainsKey(type))
+                    if (_moduelDescribes.ContainsKey(type))
                     {
                         continue;
                     }
                     var entityAttribute = type.GetCustomAttribute<EntityAttribute>();
-                    moduelDescribes.Add(type, new EntityDescribe { DbName = entityAttribute.DbName, TableName = entityAttribute.TableName, ReadSecondary = entityAttribute.ReadSecondary });
+                    _moduelDescribes.Add(type, new EntityDescribe { DbName = entityAttribute.DbName, TableName = entityAttribute.TableName, ReadSecondary = entityAttribute.ReadSecondary });
                 }
 
             }
@@ -54,11 +55,11 @@ namespace EasyDo.Domain
 
         public  EntityDescribe GetEntityDescribe(Type type)
         {
-            if (moduelDescribes.ContainsKey(type))
+            if (_moduelDescribes.ContainsKey(type))
             {
-                return moduelDescribes[type];
+                return _moduelDescribes[type];
             }
-            throw new ArgumentException(string.Format("非法的实体对象，请检查类型:{0}是否已经注册", type.FullName));
+            throw new ArgumentException($"非法的实体对象，请检查类型:{type.FullName}是否已经注册");
         }
     }
 }

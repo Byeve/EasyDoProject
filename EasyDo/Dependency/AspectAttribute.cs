@@ -7,9 +7,9 @@ namespace EasyDo.Dependency
     {
         public  Type InterceptorType { get; set; }
 
-        public AspectAttribute(Type InterceptorType)
+        protected AspectAttribute(Type interceptorType)
         {
-            this.InterceptorType = InterceptorType;
+            InterceptorType = interceptorType;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace EasyDo.Cache
 {
     public class EasyDoMemoryCache : ICache,ITransientDependency
     {
-        private readonly static MemoryCache Cache  = MemoryCache.Default;
+        private static readonly MemoryCache Cache  = MemoryCache.Default;
         public long Decrement(string key, uint value)
         {
            
@@ -29,7 +29,7 @@ namespace EasyDo.Cache
             {
                 var value  = func();
 
-                Set<T>(key, value, cacheTime);
+                Set(key, value, cacheTime);
 
                 return value;
             }

@@ -10,8 +10,8 @@ namespace EasyDo.Mongo
     {
         public override void Initialize()
         {
-            iocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
-            iocManager.ContainerBuilder.RegisterGeneric(typeof(MongoRepository<,>)).As(typeof(IRepositoryRoot<,>)).InstancePerDependency();
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+            IocManager.ContainerBuilder.RegisterGeneric(typeof(MongoRepository<,>)).As(typeof(IRepositoryRoot<,>)).InstancePerDependency();
             //iocManager.ContainerBuilder.RegisterGeneric(typeof(MongoRepositoryOfStringPrimaryKey<>)).As(typeof(IRepository<>)).InstancePerDependency();
         }
     }

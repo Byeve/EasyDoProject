@@ -8,7 +8,7 @@ namespace EasyDo.RedisCache
     {
         public override void Initialize()
         {
-            iocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+            IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
         }
     }
 }

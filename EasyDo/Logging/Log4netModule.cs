@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace EasyDo.Logging
 {
-    public class Log4netModule : Autofac.Module
+    public class Log4NetModule : Autofac.Module
     {
         protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
         {

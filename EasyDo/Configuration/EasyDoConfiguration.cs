@@ -14,7 +14,7 @@ namespace EasyDo.Configuration
         /// <summary>
         /// 随机数获取
         /// </summary>
-        internal Random rd = new Random();
+        internal Random Rd = new Random();
 
         internal EasyDoConfiguration()
         {
@@ -55,7 +55,7 @@ namespace EasyDo.Configuration
             }
 
             //随机一个从库连接
-            var index = rd.Next(0, dataBaseConfiguration.SlaveDataBaseConnectionStrings.Count-1);
+            var index = Rd.Next(0, dataBaseConfiguration.SlaveDataBaseConnectionStrings.Count-1);
             return dataBaseConfiguration.SlaveDataBaseConnectionStrings[index] ;
         }
 
@@ -64,14 +64,14 @@ namespace EasyDo.Configuration
         /// </summary>
         /// <param name="databaseName">数据库名称</param>
         /// <returns></returns>
-        public bool EnableSecondaryDB(string databaseName)
+        public bool EnableSecondaryDb(string databaseName)
         {
             var dataBaseConfiguration = DataBaseConfigurations.Find(m => m.DataBaseName == databaseName);
             if (dataBaseConfiguration == null)
             {
                 throw new ArgumentException(string.Format("数据库：{0} 未配置！查找不到数据库信息", databaseName));
             }
-            return dataBaseConfiguration.EnableSecondaryDB;
+            return dataBaseConfiguration.EnableSecondaryDb;
         }
 
         /// <summary>
