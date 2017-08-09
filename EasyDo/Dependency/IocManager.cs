@@ -9,7 +9,6 @@ namespace EasyDo.Dependency
 {
     public class IocManager
     {
-        private static readonly IocManager instance = new IocManager();
         public IContainer Container { get; private set; }
         public ContainerBuilder ContainerBuilder { get; private set; }
         static IocManager()
@@ -21,13 +20,7 @@ namespace EasyDo.Dependency
         {
             ContainerBuilder = new ContainerBuilder();
         }
-        public static IocManager Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        public static IocManager Instance { get; } = new IocManager();
 
         public void InitContainer()
         {
@@ -64,9 +57,10 @@ namespace EasyDo.Dependency
 
         private void RegisterTypeWithInterceptor(IEnumerable<Type> registerTypes, DependencyLifeStyle dependencyLifeStyle)
         {
-            if (!registerTypes.Any()) return;
+            var enumerable = registerTypes as Type[] ?? registerTypes.ToArray();
+            if (!enumerable.Any()) return;
 
-            foreach (var registerType in registerTypes)
+            foreach (var registerType in enumerable)
             {
                 var interceptorAttributes = GetInterceptorAttributes(registerType);
 
@@ -90,13 +84,14 @@ namespace EasyDo.Dependency
         {
             var methods = registerType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-            List<AspectAttribute> interceptorAttributes = new List<AspectAttribute>();
+            var interceptorAttributes = new List<AspectAttribute>();
             foreach (var method in methods)
             {
                 var aspectAttributes = method.GetCustomAttributes(true).Where(m => m.GetType().IsAssignableTo<AspectAttribute>()).Cast<AspectAttribute>();
-                if (aspectAttributes.Any())
+                var attributes = aspectAttributes as AspectAttribute[] ?? aspectAttributes.ToArray();
+                if (attributes.Any())
                 {
-                    interceptorAttributes.AddRange(aspectAttributes);
+                    interceptorAttributes.AddRange(attributes);
                 }
             }
 

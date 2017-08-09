@@ -42,12 +42,7 @@ namespace EasyDo.Cache
 		private string SerializeWithType(object obj, Type type)
 		{
 			var serialized = JsonConvert.SerializeObject(obj);
-			return string.Format(
-				"{0}{1}{2}",
-				type.AssemblyQualifiedName,
-				TypeSeperator,
-				serialized
-				);
+			return $"{type.AssemblyQualifiedName}{TypeSeperator}{serialized}";
 		}
 		private object DeserializeWithType(string serializedObj)
 		{
