@@ -63,18 +63,17 @@
     <Compile Include="RedisDBUtility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EasyDo\EasyDo.csproj">
-      <Project>{E9DD11E0-CCEB-4B7B-B5FE-9F63C5115D96}</Project>
-      <Name>EasyDo</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Lib\ServiceStack.Text.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasyDo\EasyDo.csproj">
+      <Project>{e9dd11e0-cceb-4b7b-b5fe-9f63c5115d96}</Project>
+      <Name>EasyDo</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

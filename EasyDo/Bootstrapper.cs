@@ -28,8 +28,8 @@ namespace EasyDo
                 throw new ArgumentException($"{nameof(startupModule)}应该继承于 {nameof(EasyDoModule)}.");
             }
 
-            this.StartupModule = startupModule;
-            this.IocManager = iocManager;
+            StartupModule = startupModule;
+            IocManager = iocManager;
         }
         public static Bootstrapper Create<TStartupModule>() where TStartupModule : EasyDoModule
         {

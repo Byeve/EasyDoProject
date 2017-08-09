@@ -132,15 +132,25 @@ namespace EasyDo.Mongo
             return Table.ToList();
 
         }
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> filter)
+        {
+            return Table.ToList();
+
+        }
 
         public virtual TEntity First()
         {
             return Table.FirstOrDefault();
         }
 
+        public virtual TEntity FirstOrDefault(Expression<Func<TEntity, bool>> filter)
+        {
+            return Table.Where(filter).FirstOrDefault();
+        }
+
         public virtual TEntity Get(TPrimaryKey id)
         {
-            return Table.First(m => m.Id.Equals(id));
+            return Table.FirstOrDefault(m => m.Id.Equals(id));
         }
         #endregion
 

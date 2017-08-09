@@ -83,6 +83,7 @@
     <Compile Include="Domain\IRepositoryRoot.cs" />
     <Compile Include="Domain\ISoftDelete.cs" />
     <Compile Include="Extension\ListExtension.cs" />
+    <Compile Include="Extension\QueryableExtensions.cs" />
     <Compile Include="KernelModule.cs" />
     <Compile Include="Logging\Log4netModule.cs" />
     <Compile Include="Module\DependAttribute.cs" />

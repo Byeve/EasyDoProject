@@ -8,7 +8,11 @@ namespace EasyDo.Application
     public interface IApplicationService<TEntity> : IApplicationService
     {
         bool Delete(TEntity entity);
+
+        bool Delete(string id);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending =true);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> filter);
+        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> filter);
         bool Any(Expression<Func<TEntity, bool>> filter);
         long Count(Expression<Func<TEntity, bool>> filter);
         TEntity GetById(string Id);

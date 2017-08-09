@@ -1,13 +1,13 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using EasyDo.Dependency;
-using EasyDo.Domain;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EasyDo.Dependency;
+using EasyDo.Domain;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
-namespace EasyDo.Mongo.RepositoryExtend
+namespace EasyDo.Mongo
 {
     public static class RepositoryRootExtend
     {
@@ -42,10 +42,7 @@ namespace EasyDo.Mongo.RepositoryExtend
 
         public static Task<bool> UpdateAsync<TEntity, TPrimaryKey, TField>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, TEntity entity, Expression<Func<TEntity, TField>> field, TField value) where TEntity : class, IEntity<TPrimaryKey>
         {
-            return Task.Run(() =>
-            {
-                return PartUpdate(repository, entity, Builders<TEntity>.Update.Set(field, value));
-            });
+            return Task.Run(() => PartUpdate(repository, entity, Builders<TEntity>.Update.Set(field, value)));
         }
 
 
@@ -72,10 +69,7 @@ namespace EasyDo.Mongo.RepositoryExtend
 
         public static Task<bool> UpdateAsync<TEntity, TPrimaryKey>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, TEntity entity, params UpdateDefinition<TEntity>[] updates) where TEntity : class, IEntity<TPrimaryKey>
         {
-            return Task.Run(() =>
-            {
-                return PartUpdate(repository, entity.Id, updates);
-            });
+            return Task.Run(() => PartUpdate(repository, entity.Id, updates));
         }
 
         public static bool PartUpdate<TEntity, TPrimaryKey, TField>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, FilterDefinition<TEntity> filter, Expression<Func<TEntity, TField>> field, TField value) where TEntity : class, IEntity<TPrimaryKey>
@@ -86,38 +80,29 @@ namespace EasyDo.Mongo.RepositoryExtend
 
         public static Task<bool> UpdateAsync<TEntity, TPrimaryKey, TField>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, FilterDefinition<TEntity> filter, Expression<Func<TEntity, TField>> field, TField value) where TEntity : class, IEntity<TPrimaryKey>
         {
-            return Task.Run(() =>
-            {
-                return PartUpdate(repository, filter, Builders<TEntity>.Update.Set(field, value));
-            });
+            return Task.Run(() => PartUpdate(repository, filter, Builders<TEntity>.Update.Set(field, value)));
         }
 
         public static bool PartUpdate<TEntity, TPrimaryKey>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, FilterDefinition<TEntity> filter, params UpdateDefinition<TEntity>[] updates) where TEntity : class, IEntity<TPrimaryKey>
         {
-            var PartUpdate = Builders<TEntity>.Update.Combine(updates);
-            return MongoCollection(repository).UpdateMany(filter, PartUpdate).IsAcknowledged;
+            var partUpdate = Builders<TEntity>.Update.Combine(updates);
+            return MongoCollection(repository).UpdateMany(filter, partUpdate).IsAcknowledged;
         }
 
         public static Task<bool> UpdateAsync<TEntity, TPrimaryKey>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, FilterDefinition<TEntity> filter, params UpdateDefinition<TEntity>[] updates) where TEntity : class, IEntity<TPrimaryKey>
         {
-            return Task.Run(() =>
-            {
-                return PartUpdate(repository, filter, updates);
-            });
+            return Task.Run(() => PartUpdate(repository, filter, updates));
         }
 
         public static bool PartUpdate<TEntity, TPrimaryKey>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> filter, params UpdateDefinition<TEntity>[] updates) where TEntity : class, IEntity<TPrimaryKey>
         {
-            var PartUpdate = Builders<TEntity>.Update.Combine(updates);
-            return MongoCollection(repository).UpdateMany(filter, PartUpdate).IsAcknowledged;
+            var partUpdate = Builders<TEntity>.Update.Combine(updates);
+            return MongoCollection(repository).UpdateMany(filter, partUpdate).IsAcknowledged;
         }
 
         public static Task<bool> UpdateAsync<TEntity, TPrimaryKey>(this IRepositoryRoot<TEntity, TPrimaryKey> repository, Expression<Func<TEntity, bool>> filter, params UpdateDefinition<TEntity>[] updates) where TEntity : class, IEntity<TPrimaryKey>
         {
-            return Task.Run(() =>
-            {
-                return PartUpdate(repository, filter, updates);
-            });
+            return Task.Run(() => PartUpdate(repository, filter, updates));
         }
 
         #endregion PartUpdate

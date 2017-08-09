@@ -25,7 +25,9 @@ namespace EasyDo.Domain
         Task<bool> DeleteAsync(TEntity entity);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, object>> order, int pageIndex, int size, bool isDescending);
         IEnumerable<TEntity> FindAll();
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> filter);
         TEntity First();
+        TEntity FirstOrDefault(Expression<Func<TEntity, bool>> filter);
         TEntity Get(TPrimaryKey id);
         void Insert(IEnumerable<TEntity> entities);
         void Insert(TEntity entity);
